@@ -1,0 +1,21 @@
+{
+  "name": "hardhat-simplestorage",
+  "version": "1.0.0",
+  "description": "A simple storage contract that allows you to store and retrieve any number. It also allows you to create multiple simple storage contract in a storage factory contract. Composability was created which allows to interact with an already deployed contract in the storage factory contract",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Paul Elisha",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.9.0",
+    "hardhat": "^2.19.1"
+  },
+  "dependencies": {
+    "prettier": "^3.1.0",
+    "prettier-plugin-solidity": "^1.2.0"
+  }
+}
