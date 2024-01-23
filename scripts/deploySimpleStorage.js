@@ -42,8 +42,8 @@ const verify = async (contractAddress, args) => {
       console.log(error);
     }
   }
-
 }
+
 deploy().catch((error) => {
   console.error(error);
   process.exitCode = 1;
