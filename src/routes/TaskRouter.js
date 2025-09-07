@@ -10,7 +10,9 @@ class TaskRouter {
     }
 
     registerRoutes() {
-        this.router.get("/", this.taskController.getTasks);
+        this.router.get('/', this.taskController.getTasks);
+        this.router.get('/search/tags', this.taskController.getTasksByTags);
+        this.router.get("/", this.taskController.getTasksByStatus);
         this.router.post("/", this.taskController.createTask);
         this.router.put("/:id", this.taskController.updateTask);
         this.router.delete("/:id", this.taskController.deleteTask);
