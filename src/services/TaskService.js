@@ -1,70 +1,142 @@
-import Task from '../models/Task.js';
+import Task from "../models/Task.js";
+import Project from "../models/Project.js";
+import Member from "../models/Member.js";
 
 class TaskService {
+    createTask = async (workSpaceId, userId, projectId, body) => {
+        const { title, description, priority, status, assignedTo, deadline } = body;
 
-    async getTasks(req, res) {
-        const { userId } = req.user._id
-        const tasks = await Task.find({ userId });
-        if (tasks.length == 0) {
-            const error = new Error('No Tasks');
-            error.status = 404;
-            throw error
-        }
-        return tasks;
-    }
+        const project = await Project.findById(projectId);
 
-    async getTasksByStatus(query, userId) {
-        const { status } = query
-        let tasks = await Task.find({ userId, status });
-        if (tasks.length == 0) {
-            const error = new Error('No completed Tasks');
-            error.status = 404;
-            throw error
-        }
-        return tasks;
-    }
+        if (!project || project.workSpaceId.toString() !== workSpaceId.toString())
+            throw new Error("Project not found or does not belong to this workspace");
 
-    async getTasksByTags(query) {
-        const { tags } = query
-        let tasks = await Task.find({ tags: { $in: tags } });
-        if (tasks.length == 0) {
-            const error = new Error('No Tasks with the specified tags');
-            error.status = 404;
-            throw error
-        }
-        return tasks;
-    }
+        if (assignedTo) {
+            const isAssignedTo = await Member.exists({
+                userId: assignedTo,
+                workSpaceId,
+            });
 
-    async createTask(taskData) {
-        const task = await Task.create(taskData);
-        if (!task) {
-            const error = new Error("Task creation failed");
-            error.status = 400;
-            throw error;
+            if (!isAssignedTo)
+                throw new Error("Assigned user is not a member of this workspace");
         }
-        return task;
-    }
 
-    async updateTask(filter, taskData) {
-        const task = await Task.findOneAndUpdate(filter, taskData, { new: true });
-        if (!task) {
-            const error = new Error("Task not found or you are not authorized to update this task");
-            error.status = 404;
-            throw error;
-        }
-        return task;
-    }
+        const task = Task.create({
+            title,
+            description,
+            priority: priority,
+            status: status,
+            userId,
+            workSpaceId,
+            projectId,
+            deadline,
+        });
 
-    async deleteTask(filter) {
-        let task = await Task.findOne(filter);
-        if (!task) {
-            const error = new Error("Task not found or you are not authorized to delete this task");
-            error.status = 404;
-            throw error;
+        return { task };
+    };
+
+    getTaskById = async (workSpaceId, projectId, taskId) => {
+        const project = Project.findById(projectId);
+
+        if (!project || project.workSpaceId.toString() !== workSpaceId.toString())
+            throw new Error("Project does not exists in this workspace");
+
+        const task = Task.findOne({ _id: taskId, workSpaceId, projectId }).populate(
+            "assignedTo",
+            "_id name displayPicture -permissions"
+        );
+
+        if (!task) throw new Error("Task not found");
+
+        return { task };
+    };
+
+    deleteTask = async (workSpaceId, taskId) => {
+        return await Task.findOneAndDelete({ _id: taskId, workSpaceId });
+    };
+
+    updateTask = async (workSpaceId, projectId, taskId, body) => {
+        const { title, description, priority, status, assignedTo, deadline } = body;
+
+        const project = await Project.findById(projectId);
+
+        if (!project || project.workSpaceId.toString() !== workSpaceId.toString())
+            throw new Error("Project does not exists in this workspace");
+
+        let task = await Task.findById(taskId);
+
+        if (!task || task.projectId.toString() !== projectId.toString())
+            throw new Error("Task does not belong to this project");
+
+        task = await Task.findByIdAndUpdate(
+            { taskId },
+            { $set: { ...body } },
+            { new: true }
+        );
+
+        if (!task) throw new Error("Failed to update task");
+
+        return { task };
+    };
+
+    getAllTasks = async (workSpaceId, filters, pagination) => {
+        const query = {
+            workSpaceId
         }
-        await Task.findByIdAndDelete(id);
-        return;
+
+        if (filters.projectId) {
+            query.projectId = projectId
+        }
+
+        if (filters.status && filters.status.length > 0) {
+            query.status = { $in: filters.status }
+        }
+
+        if (filters.priority && filters.priority.length > 0) {
+            query.priority = { $in: filters.priority }
+        }
+
+        if (filters.assignedTo && filters.assignedTo.length > 0) {
+            query.assignedTo = { $in: filters.assignedTo }
+        }
+
+        if (filters.keyword && filters.keyword !== undefined) {
+            query.title = { $regex: filters.keyword, $options: "i" }
+        }
+
+        if (filters.deadline) {
+            query.deadline = {
+                $eq: new Date(filters.deadline)
+            }
+        }
+
+        const { pageSize, pageNumber } = pagination;
+
+        const skip = (pageNumber - 1) * pageSize
+
+        const [tasks, totalCount] = await Promise.all(
+            TaskModel.find(query)
+                .skip(skip)
+                .limit(pageSize)
+                .sort({ createdAt: -1 })
+                .populate("assignedTo", "_id name displayPicture -password")
+                .populate("project", "_id emoji name"),
+            TaskModel.countDocuments(query),
+        )
+
+        const totalPages = Math.ceil(totalCount / pageSize);
+
+        return {
+            tasks,
+            pagination: {
+                pageSize,
+                pageNumber,
+                totalCount,
+                totalPages,
+                skip,
+            },
+        };
     }
 }
 
-export { TaskService }
+export { TaskService };
