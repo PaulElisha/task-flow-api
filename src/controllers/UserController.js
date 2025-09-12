@@ -5,21 +5,18 @@ class UserController {
         this.userService = new UserService();
     }
 
-    async updateUser(req, res) {
-        try {
-            await this.userService.updateUser(req.params.id, req.body);
-            res.status(200).json({ status: "ok", message: "User updated successfully" });
-        } catch (error) {
-            res.status(500).json(error.message);
-        }
-    }
+    getCurrentUser = async (req, res) => {
+        const userId = req.user._id;
 
-    async deleteUser(req, res) {
         try {
-            await this.userService.deleteUser(req.params.id);
-            res.status(200).json({ status: "ok", message: "User deleted successfully" });
+            const { user } = await this.userService.getCurrentUser(userId);
+
+            res.status(200).json({ message: 'Fetched current user', status: 'ok', user })
         } catch (error) {
-            res.status(500).json(error.message);
+            res.status(500).json({
+                message: error.message,
+                status: 'error'
+            })
         }
     }
 }

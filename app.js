@@ -4,6 +4,9 @@ import passport from 'passport';
 import { taskRouter } from './src/routes/TaskRouter.js';
 import { userRouter } from './src/routes/UserRouter.js';
 import { authRouter } from './src/routes/AuthRouter.js';
+import { workspaceRouter } from './src/routes/WorkspaceRouter.js'
+import { memberRouter } from './src/routes/MemberRouter.js'
+import { projectRouter } from './src/routes/ProjectRouter.js'
 
 import { jwtconfig } from './src/config/authConfig.js';
 import { connectDb } from './src/config/dbConfig.js';
@@ -41,6 +44,9 @@ class App {
         this.app.use("/", authRouter)
         this.app.use('/api/users', passport.authenticate("jwt", { session: false }), userRouter);
         this.app.use('/api/tasks', passport.authenticate("jwt", { session: false }), taskRouter);
+        this.app.use('/api/projects', passport.authenticate("jwt", { session: false }), projectRouter);
+        this.app.use('/api/members', passport.authenticate("jwt", { session: false }), memberRouter);
+        this.app.use('/api/workspace', passport.authenticate("jwt", { session: false }), workspaceRouter);
 
     }
 

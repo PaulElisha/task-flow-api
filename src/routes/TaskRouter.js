@@ -10,11 +10,10 @@ class TaskRouter {
     }
 
     registerRoutes() {
-        this.router.get('/', this.taskController.getTasks);
-        this.router.get('/search/tags', this.taskController.getTasksByTags);
-        this.router.get("/", this.taskController.getTasksByStatus);
-        this.router.post("/", this.taskController.createTask);
-        this.router.put("/:id", this.taskController.updateTask);
+        this.router.get('/workspace/:workspaceId/all', this.taskController.getAllTasks);
+        this.router.get('/:id/project/:projectId/workspace/:workspaceId', this.taskController.getTaskById);
+        this.router.post("/project/:projectId/workspace/:workspaceId/create", this.taskController.createTask);
+        this.router.put("/:id/project/:projectId/workspace/:workspaceId/update", this.taskController.updateTask);
         this.router.delete("/:id", this.taskController.deleteTask);
     }
 }

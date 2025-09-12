@@ -11,8 +11,7 @@ class UserRouter {
     }
 
     registerRoutes() {
-        this.router.put("/:id", this.userController.updateUser);
-        this.router.delete("/:id", this.userController.deleteUser);
+        this.router.delete("/current", this.userController.getCurrentUser);
     }
 }
 

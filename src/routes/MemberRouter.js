@@ -11,7 +11,7 @@ class MemberRouter {
     }
 
     registerRoutes() {
-        this.router.post('/:inviteCode', this.memberController.joinWorkspaceByInviteCode);
+        this.router.post('/workspace/:inviteCode/join', this.memberController.joinWorkspaceByInviteCode);
     }
 }
 
