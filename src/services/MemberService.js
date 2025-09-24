@@ -1,75 +1,57 @@
+/** @format */
+
 import Member from "../models/Member";
 import Workspace from "../models/Workspace";
 import Role, { Roles } from "../models/Role";
 
+import Validator from "../utils/validation/validator";
+
 class MemberService {
-    getMemberRoleInWorkspace = async (userId, workSpaceId) => {
-        const workspace = await Workspace.findById(workSpaceId);
-        if (!workspace) {
-            const error = new Error("Workspace not found");
-            error.status = 404;
-            throw error;
-        }
+  getMemberRoleInWorkspace = async (userId, workSpaceId) => {
+    const workspace = await Workspace.findById(workSpaceId);
+    if (!workspace) throw new Error("Workspace not found");
 
-        const member = await Member.findOne({ userId, workSpaceId }).populate(
-            "role"
-        );
+    const member = await Member.findOne({ userId, workSpaceId }).populate(
+      "role"
+    );
 
-        if (!member) {
-            const error = new Error("Member not found in the specified workspace");
-            error.status = 404;
-            throw error;
-        }
+    if (!member) throw new Error("Member not found in the specified workspace");
 
-        let role;
-        return (role = member ? member.role.type : null);
-    };
+    const roleType = member && member.role.type;
+    return roleType;
+  };
 
-    joinWorkspaceByInviteCode = async (userId, inviteCode) => {
-        const workspace = await Workspace.findOne({ inviteCode }).exec();
-        if (!workspace) {
-            const error = new Error("Invalid invite code");
-            error.status = 404;
-            throw error;
-        }
+  joinWorkspaceByInviteCode = async (userid, inviteCode) => {
+    const workspace = await Workspace.findOne({ inviteCode }).exec();
+    if (!workspace) throw new Error("Invalid invite code");
 
-        const member = await Member.findOne({
-            userId,
-            workSpaceId: workspace._id,
-        }).exec();
+    const validator = Validator.withSchemas({
+      user: userIdSchema,
+      workspace: workspaceIdSchema,
+    });
 
-        if (member) {
-            const error = new Error("User is already a member of this workspace");
-            error.status = 400;
-            throw error;
-        }
+    const userId = await validator.user(userid);
+    const workSpaceId = await validator.workspace(workspace._id);
 
-        const role = await Role.findOne({ type: Roles.MEMBER });
+    const member = await Member.findOne({
+      userId,
+      workSpaceId,
+    }).exec();
 
-        if (!role) {
-            const error = new Error("Member role not found");
-            error.status = 500;
-            throw error;
-        }
+    if (member) throw new Error("User is already a member of this workspace");
 
-        const error = Member.validate({
-            userId,
-            workSpaceId: workspace._id,
-            role: role._id,
-        });
-        if (error) {
-            const error = new Error("Incorrect Input value");
-            throw error;
-        }
+    const role = await Role.findOne({ type: Roles.MEMBER });
 
-        await Member.create({
-            userId,
-            workSpaceId: workspace._id,
-            role: role._id,
-        });
+    if (!role) throw new Error("Member role not found");
 
-        return { workspaceId: workspace._id, type: role.type };
-    };
+    await Member.create({
+      userId,
+      workSpaceId,
+      role: role._id,
+    });
+
+    return { workspaceId: workspace._id, type: role.type };
+  };
 }
 
 export { MemberService };
