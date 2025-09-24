@@ -1,89 +1,76 @@
 /** @format */
-
+import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { User } from "../models/User.js";
+import { AuthService } from "../services/AuthService.js";
 
 import { config } from "dotenv";
 config({ path: ".env" });
 
 class AuthConfig {
   constructor() {
-    this.jwtStrategy = this.jwtconfig();
-    this.localSignupStrategy = this.localsignup();
+    this.authService = new AuthService();
+    this.googleStrategy = this.googleStrategy();
     this.localLoginStrategy = this.locallogin();
   }
 
-  jwtconfig() {
-    return new JwtStrategy(
+  googleStrategy() {
+    return new GoogleStrategy(
       {
-        secretOrKey: process.env.JWT_SECRET,
-        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      },
-      async (token, done) => {
-        try {
-          return done(null, token.user);
-        } catch (error) {
-          return done(error, false);
-        }
-      }
-    );
-  }
-
-  localsignup() {
-    return new LocalStrategy(
-      {
-        usernameField: "email",
-        passwordField: "password",
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: process.env.GOOGLE_CALLBACK_URL,
+        scope: ["profile", "email"],
         passReqToCallback: true,
       },
-      async (req, email, password, done) => {
+      async (req, accessToken, refreshToken, profile, done) => {
         try {
-          const existingUser = await User.findOne({ email });
-          if (existingUser) {
-            return done(null, { message: "User already exists" });
+          const { email, sub: googleId, picture } = profile._json;
+          console.log(profile, "profile");
+          console.log(googleId, "googleId");
+          if (!googleId) {
+            throw new NotFoundException("Google ID (sub) is missing");
           }
-          const user = await User.create({
-            name: req.body.name,
-            email,
-            password,
+
+          const { user } = await this.authService.loginOrCreateAccount({
+            provider: ProviderEnum.GOOGLE,
+            displayName: profile.displayName,
+            providerId: googleId,
+            picture: picture,
+            email: email,
           });
-          return done(null, user);
+          done(null, user);
         } catch (error) {
-          console.error("Error during signup:", error);
-          return done(error);
+          done(error, false);
         }
       }
     );
   }
 
-  locallogin() {
+  localLoginStrategy() {
     return new LocalStrategy(
       {
         usernameField: "email",
         passwordField: "password",
+        session: true,
       },
       async (email, password, done) => {
         try {
-          const user = await User.findOne({ email });
-          if (!user) {
-            return done(null, false, { message: "User not found" });
-          }
-          const isValid = await user.comparePassword(password);
-          if (!isValid) {
-            return done(null, false, { message: "Invalid email or password" });
-          }
-          return done(null, user, { message: "Logged in successfully" });
+          const user = await this.authService.registerUser({ email, password });
+          return done(null, user);
         } catch (error) {
-          return done(error);
+          return done(error, false, { message: error?.message });
         }
       }
     );
   }
 }
 
-const jwtStrategy = new AuthConfig().jwtStrategy;
-const localSignupStrategy = new AuthConfig().localSignupStrategy;
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user, done) => done(null, user));
+
+const googleStrategy = new AuthConfig().googleStrategy;
 const localLoginStrategy = new AuthConfig().localLoginStrategy;
 
-export { jwtStrategy, localLoginStrategy, localSignupStrategy };
+export { googleStrategy, localLoginStrategy };

@@ -10,11 +10,7 @@ import { workspaceRouter } from "./src/routes/WorkspaceRouter.js";
 import { memberRouter } from "./src/routes/MemberRouter.js";
 import { projectRouter } from "./src/routes/ProjectRouter.js";
 
-import {
-  localLoginStrategy,
-  localSignupStrategy,
-  jwtStrategy,
-} from "./src/config/authConfig.js";
+import { localLoginStrategy, googleStrategy } from "./src/config/authConfig.js";
 import { connectDb } from "./src/config/connectDb.js";
 
 import { config } from "dotenv";
@@ -40,39 +36,18 @@ class App {
     this.app.use(passport.session());
   }
 
-  jwtConfig() {
-    passport.use(jwtStrategy);
-    passport.use("signup", localSignupStrategy);
-    passport.use("login", localLoginStrategy);
+  passportConfig() {
+    passport.use(localLoginStrategy);
+    passport.use(googleStrategy);
   }
 
   initializeRoutes() {
     this.app.use("/auth", authRouter);
-    this.app.use(
-      "/api/users",
-      passport.authenticate("jwt", { session: false }),
-      userRouter
-    );
-    this.app.use(
-      "/api/tasks",
-      passport.authenticate("jwt", { session: false }),
-      taskRouter
-    );
-    this.app.use(
-      "/api/projects",
-      passport.authenticate("jwt", { session: false }),
-      projectRouter
-    );
-    this.app.use(
-      "/api/members",
-      passport.authenticate("jwt", { session: false }),
-      memberRouter
-    );
-    this.app.use(
-      "/api/workspace",
-      passport.authenticate("jwt", { session: false }),
-      workspaceRouter
-    );
+    this.app.use("/api/users", userRouter);
+    this.app.use("/api/tasks", taskRouter);
+    this.app.use("/api/projects", projectRouter);
+    this.app.use("/api/members", memberRouter);
+    this.app.use("/api/workspace", workspaceRouter);
   }
 
   startServer() {
