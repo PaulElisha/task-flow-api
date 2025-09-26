@@ -2,11 +2,9 @@
 
 import express from "express";
 import { ProjectController } from "../controllers/ProjectController";
-import { UserAuthorization } from "../middlewares/AuthorizeUser.js";
 class ProjectRouter {
   constructor() {
     this.router = express.Router();
-    this.userAccess = new UserAuthorization();
     this.projectController = new ProjectController();
     this.registerRoutes();
   }

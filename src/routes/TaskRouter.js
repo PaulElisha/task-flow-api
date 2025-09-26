@@ -6,7 +6,6 @@ import { TaskController } from "../controllers/TaskController.js";
 class TaskRouter {
   constructor() {
     this.router = express.Router();
-    this.userAccess = new UserAuthorization();
     this.taskController = new TaskController();
     this.registerRoutes();
   }

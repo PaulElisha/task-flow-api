@@ -35,7 +35,7 @@ class App {
   initializeMiddlewares() {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
-    app.use(
+    this.app.use(
       session({
         name: "session",
         keys: [process.env.SESSION_SECRET],
