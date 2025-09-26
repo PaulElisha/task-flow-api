@@ -77,10 +77,11 @@ userSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-userSchema.methods.omitPassword = async () => {
+userSchema.methods.omitPassword = async function () {
   const userObject = this.toObject();
   delete userObject.password;
 
   return userObject;
 };
+
 export default model("User", userSchema);

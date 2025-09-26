@@ -10,7 +10,7 @@ class AuthController {
   }
 
   handleSignup = async (req, res) => {
-    await this.authService.registerUser(req.body);
+    await this.authService.localRegister(req.body);
 
     return res.status(200).json({ message: "User registered successfully" });
   };

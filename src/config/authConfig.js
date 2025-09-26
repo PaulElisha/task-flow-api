@@ -33,7 +33,7 @@ class AuthConfig {
             throw new NotFoundException("Google ID (sub) is missing");
           }
 
-          const { user } = await this.authService.loginOrCreateAccount({
+          const { user } = await this.authService.googleLoginOrRegister({
             provider: ProviderEnum.GOOGLE,
             displayName: profile.displayName,
             providerId: googleId,
@@ -57,7 +57,7 @@ class AuthConfig {
       },
       async (email, password, done) => {
         try {
-          const user = await this.authService.registerUser({ email, password });
+          const user = await this.authService.localLogin({ email, password });
           return done(null, user);
         } catch (error) {
           return done(error, false, { message: error?.message });

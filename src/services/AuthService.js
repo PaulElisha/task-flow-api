@@ -17,7 +17,7 @@ class AuthService {
     this.session.startTransaction();
   };
 
-  loginOrCreateAccount = async (data) => {
+  googleLoginOrRegister = async (data) => {
     const { provider, providerId, displayName, picture, email } = data;
 
     try {
@@ -73,7 +73,7 @@ class AuthService {
     }
   };
 
-  registerUser = async (body) => {
+  localRegister = async (body) => {
     const { email, name, password } = body;
 
     try {
@@ -139,7 +139,7 @@ class AuthService {
     }
   };
 
-  verifyUser = async ({ email, password, provider = Provider.EMAIL }) => {
+  localLogin = async ({ email, password, provider = Provider.EMAIL }) => {
     const account = await Account.findOne({ provider, providerId: email });
 
     if (!account) throw new Error("Invalid email or password");
@@ -152,7 +152,7 @@ class AuthService {
 
     if (!isMatch) throw new Error("Invalid email or password");
 
-    return user.omitPassword();
+    return user;
   };
 }
 

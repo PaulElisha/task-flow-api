@@ -11,6 +11,8 @@ import { memberRouter } from "./src/routes/MemberRouter.js";
 import { projectRouter } from "./src/routes/ProjectRouter.js";
 
 import { localLoginStrategy, googleStrategy } from "./src/config/authConfig.js";
+import { isAuthenticated } from "./src/middlewares/authenticate.js";
+
 import { connectDb } from "./src/config/connectDb.js";
 
 import { config } from "dotenv";
@@ -27,27 +29,38 @@ class App {
     this.app = express();
     this.initializeMiddlewares();
     this.initializeRoutes();
+    this.passportConfig();
   }
 
   initializeMiddlewares() {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
+    app.use(
+      session({
+        name: "session",
+        keys: [process.env.SESSION_SECRET],
+        maxAge: 24 * 60 * 60 * 1000,
+        secure: config.NODE_ENV === "production",
+        httpOnly: true,
+        sameSite: "lax",
+      })
+    );
     this.app.use(passport.initialize());
     this.app.use(passport.session());
   }
 
   passportConfig() {
-    passport.use(localLoginStrategy);
+    passport.use("local", localLoginStrategy);
     passport.use(googleStrategy);
   }
 
   initializeRoutes() {
     this.app.use("/auth", authRouter);
-    this.app.use("/api/users", userRouter);
-    this.app.use("/api/tasks", taskRouter);
-    this.app.use("/api/projects", projectRouter);
-    this.app.use("/api/members", memberRouter);
-    this.app.use("/api/workspace", workspaceRouter);
+    this.app.use("/api/users", isAuthenticated, userRouter);
+    this.app.use("/api/tasks", isAuthenticated, taskRouter);
+    this.app.use("/api/projects", isAuthenticated, projectRouter);
+    this.app.use("/api/members", isAuthenticated, memberRouter);
+    this.app.use("/api/workspace", isAuthenticated, workspaceRouter);
   }
 
   startServer() {
