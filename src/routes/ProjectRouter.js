@@ -1,7 +1,7 @@
 /** @format */
 
 import express from "express";
-import { ProjectController } from "../controllers/ProjectController";
+import { ProjectController } from "../controllers/ProjectController.js";
 class ProjectRouter {
   constructor() {
     this.router = express.Router();

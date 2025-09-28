@@ -1,8 +1,8 @@
 /** @format */
 
 import mongoose from "mongoose";
-import Project from "../models/Project";
-import Task, { Status } from "../models/Task";
+import Project from "../models/Project.js";
+import Task, { Status } from "../models/Task.js";
 
 import {
   projectIdSchema,
@@ -11,7 +11,7 @@ import {
 } from "../utils/validation/schemas/projectSchema.js";
 import { workspaceIdSchema } from "../utils/validation/schemas/workspaceSchema.js";
 
-import Validator from "../utils/validation/validator";
+import { Validator } from "../utils/validation/validator.js";
 
 class ProjectService {
   createProject = async (workspaceid, userid, body) => {

@@ -1,20 +1,7 @@
 /** @format */
 
 import { Schema, model } from "mongoose";
-
 import bcrypt from "bcrypt";
-import joi from "joi";
-
-const userJoiSchema = joi.object({
-  firstName: joi.string().required(),
-  lastName: joi.string().required(),
-  email: joi.string().required(),
-  password: joi.string().required(),
-  displayPicture: joi.string().optional(),
-  isActive: joi.boolean().optional(),
-  lastLogin: joi.date.optional(),
-  avatar: joi.string().optional(),
-});
 
 const userSchema = new Schema(
   {
@@ -36,7 +23,7 @@ const userSchema = new Schema(
       select: true,
     },
     currentWorkspace: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Workspace",
     },
     displayPicture: {

@@ -6,6 +6,7 @@ import Account, { Provider } from "../models/Account.js";
 import Workspace from "../models/Workspace.js";
 import Role, { Roles } from "../models/Role.js";
 import Member from "../models/Member.js";
+import { Seeder } from "../seeder/Seeder.js";
 
 class AuthService {
   constructor() {
@@ -13,6 +14,7 @@ class AuthService {
   }
 
   run = async () => {
+    await new Seeder().run();
     this.session = await mongoose.startSession();
     this.session.startTransaction();
   };
@@ -78,64 +80,65 @@ class AuthService {
 
     try {
       await this.run();
-      let user = await User.findOne({ email }).session(this.session);
+      const existingUser = await User.findOne({ email }).session(this.session);
+      if (existingUser) throw new Error("Email already exists");
 
-      if (user) throw new Error("Email already exists");
+      let [user] = await User.create([{ email, name, password }], {
+        session: this.session,
+      });
 
-      user = await User.create(
-        { email, name, password },
+      console.log("User Id:", user);
+      await Account.create(
+        [
+          {
+            userId: user._id,
+            provider: Provider.EMAIL,
+            providerId: email,
+          },
+        ],
         { session: this.session }
       );
 
-      const account = await Account.create(
-        {
-          userId: user._id,
-          provider: Provider.EMAIL,
-          providerId: email,
-        },
-        { session: this.session }
-      );
-
-      const workspace = await Workspace.create(
-        {
-          name: `My Workspace`,
-          description: `Welcome to ${user.name} workspace`,
-          userId: user._id,
-        },
+      const [workspace] = await Workspace.create(
+        [
+          {
+            name: `New Workspace`,
+            description: `Welcome to ${name} workspace`,
+            userId: user._id,
+          },
+        ],
         { session: this.session }
       );
 
       const ownerRole = await Role.findOne({ type: Roles.OWNER }).session(
         this.session
       );
-
       if (!ownerRole) throw new Error("Owner role not found");
 
-      const member = await Member.create(
-        {
-          userId: user._id,
-          workspaceId: workspace._id,
-          role: ownerRole._id,
-        },
+      await Member.create(
+        [
+          {
+            userId: user._id,
+            workSpaceId: workspace._id,
+            role: ownerRole._id,
+          },
+        ],
         { session: this.session }
       );
 
       user.currentWorkspace = workspace._id;
-
       await user.save({ session: this.session });
 
       await this.session.commitTransaction();
-      await this.session.endSession();
-
       return {
         userId: user._id,
         workspaceId: workspace._id,
       };
     } catch (error) {
-      await this.session.abortTransaction();
-      this.session.endSession();
-
+      if (this.session) await this.session.abortTransaction();
       throw error;
+    } finally {
+      if (this.session) await this.session.endSession();
     }
   };
 

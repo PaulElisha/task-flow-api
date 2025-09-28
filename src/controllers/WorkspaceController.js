@@ -1,7 +1,7 @@
 /** @format */
 
-import { WorkspaceService } from "../services/WorkspaceService";
-import { MemberService } from "../services/MemberService";
+import { WorkspaceService } from "../services/WorkspaceService.js";
+import { MemberService } from "../services/MemberService.js";
 
 class WorkspaceController {
   constructor() {
@@ -49,10 +49,10 @@ class WorkspaceController {
 
     try {
       await this.getMemberRoleInWorkspace(userId, workspaceId);
-      const { workspace } = await this.workspaceService.getWorkspaceById(
+      const workspace = await this.workspaceService.getWorkspaceById(
         workspaceId
       );
-      res.status(200).josn({
+      res.status(200).json({
         message: "Workspace fetched successfully",
         status: "ok",
         workspace,
@@ -104,6 +104,7 @@ class WorkspaceController {
   };
 
   changeMemberRole = async (req, res) => {
+    console.log("Body", req.body);
     const userId = req.user._id;
     const workspaceId = req.params.id;
     const { memberId, roleId } = req.body;

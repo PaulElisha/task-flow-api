@@ -1,8 +1,7 @@
 /** @format */
 
-import { Task } from "../models/Task.js";
 import { TaskService } from "../services/TaskService.js";
-import { MemberService } from "../services/MemberService";
+import { MemberService } from "../services/MemberService.js";
 
 class TaskController {
   constructor() {

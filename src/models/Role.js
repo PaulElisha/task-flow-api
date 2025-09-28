@@ -1,12 +1,6 @@
 /** @format */
 
-import joi from "joi";
 import { Schema, model } from "mongoose";
-
-const roleJoiSchema = joi.object({
-  type: joi.string().required(),
-  permissions: joi.array().items(joi.string()),
-});
 
 export const Roles = {
   OWNER: "OWNER",
@@ -78,9 +72,5 @@ const roleSchema = new Schema(
     timestamps: true,
   }
 );
-
-roleJoiSchema.statics.validate = (data) => {
-  return roleJoiSchema.validate(data, { abortEarly: false });
-};
 
 export default model("Role", roleSchema);

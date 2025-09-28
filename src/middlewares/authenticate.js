@@ -2,10 +2,10 @@
 
 export const isAuthenticated = (req, res, next) => {
   req.isAuthenticated = () => {
-    return req.user && req.user._id;
+    return req.user ? true : false;
   };
   if (!req.isAuthenticated()) {
-    throw new UnauthorizedException("Unauthorized. Please log in.");
+    throw new Error("Unauthorized. Please log in.");
   }
   next();
 };

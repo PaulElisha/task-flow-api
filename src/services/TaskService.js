@@ -7,12 +7,12 @@ import Member from "../models/Member.js";
 import {
   createTaskSchema,
   updateTaskSchema,
-} from "../validation/taskValidation.js";
+} from "../utils/validation/schemas/taskSchema.js";
 import { projectIdSchema } from "../utils/validation/schemas/projectSchema.js";
 import { workspaceIdSchema } from "../utils/validation/schemas/workspaceSchema.js";
 import { taskIdSchema } from "../utils/validation/schemas/taskSchema.js";
 
-import Validator from "../utils/validation/validator.js";
+import { Validator } from "../utils/validation/validator.js";
 
 class TaskService {
   createTask = async (workspaceid, userid, projectid, body) => {

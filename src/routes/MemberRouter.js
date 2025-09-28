@@ -1,7 +1,7 @@
 /** @format */
 
 import express from "express";
-import { MemberController } from "../controllers/MemberController";
+import { MemberController } from "../controllers/MemberController.js";
 
 class MemberRouter {
   constructor() {

@@ -1,8 +1,7 @@
 /** @format */
 
-import jwt from "jsonwebtoken";
 import passport from "passport";
-import { AuthService } from "../services/AuthService";
+import { AuthService } from "../services/AuthService.js";
 
 class AuthController {
   constructor() {

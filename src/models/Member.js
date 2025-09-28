@@ -1,14 +1,6 @@
 /** @format */
 
 import { Schema, model } from "mongoose";
-import joi from "joi";
-
-const memberJoiSchema = joi.object({
-  userId: joi.string().required(),
-  workSpaceId: joi.string().required(),
-  role: joi.string().required(),
-  joinedAt: joi.date().optional(),
-});
 
 const memberSchema = new Schema(
   {
@@ -34,9 +26,5 @@ const memberSchema = new Schema(
   },
   { timestamps: true }
 );
-
-memberJoiSchema.statics.validate = (data) => {
-  return memberJoiSchema.validate(data, { abortEarly: false });
-};
 
 export default model("Member", memberSchema);

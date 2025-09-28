@@ -2,7 +2,7 @@
 
 import Joi from "joi";
 import mongoose from "mongoose";
-import { Priority, Status } from "../../../models/Task";
+import { Priority, Status } from "../../../models/Task.js";
 
 export const taskIdSchema = Joi.string()
   .custom((value, helpers) => {

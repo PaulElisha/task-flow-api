@@ -2,6 +2,7 @@
 
 import express from "express";
 import passport from "passport";
+import session from "express-session";
 
 import { taskRouter } from "./src/routes/TaskRouter.js";
 import { userRouter } from "./src/routes/UserRouter.js";
@@ -10,7 +11,7 @@ import { workspaceRouter } from "./src/routes/WorkspaceRouter.js";
 import { memberRouter } from "./src/routes/MemberRouter.js";
 import { projectRouter } from "./src/routes/ProjectRouter.js";
 
-import { localLoginStrategy, googleStrategy } from "./src/config/authConfig.js";
+import { loginLocalStrategy } from "./src/config/authConfig.js";
 import { isAuthenticated } from "./src/middlewares/authenticate.js";
 
 import { connectDb } from "./src/config/connectDb.js";
@@ -18,10 +19,10 @@ import { connectDb } from "./src/config/connectDb.js";
 import { config } from "dotenv";
 config({ path: ".env" });
 
-const port = process.env.PORT;
-const hostname = process.env.HOSTNAME;
-const MONGODB_URI = process.env.MONGODB_URI;
-console.log("Port and Hostname:", `${port} - ${hostname} - ${MONGODB_URI}`);
+const PORT = process.env.PORT;
+const HOST_NAME = process.env.HOST_NAME;
+const MONGODB_URI = process.env.MONGO_URI;
+console.log("Port and Hostname:", `${PORT} - ${HOST_NAME} - ${MONGODB_URI}`);
 
 class App {
   constructor() {
@@ -37,12 +38,15 @@ class App {
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(
       session({
-        name: "session",
-        keys: [process.env.SESSION_SECRET],
-        maxAge: 24 * 60 * 60 * 1000,
-        secure: config.NODE_ENV === "production",
-        httpOnly: true,
-        sameSite: "lax",
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+          maxAge: 24 * 60 * 60 * 1000,
+          secure: process.env.NODE_ENV === "production",
+          httpOnly: true,
+          sameSite: "lax",
+        },
       })
     );
     this.app.use(passport.initialize());
@@ -50,8 +54,8 @@ class App {
   }
 
   passportConfig() {
-    passport.use("local", localLoginStrategy);
-    passport.use(googleStrategy);
+    passport.use("local", loginLocalStrategy);
+    // passport.use(googleStrategy);
   }
 
   initializeRoutes() {
@@ -60,12 +64,12 @@ class App {
     this.app.use("/api/tasks", isAuthenticated, taskRouter);
     this.app.use("/api/projects", isAuthenticated, projectRouter);
     this.app.use("/api/members", isAuthenticated, memberRouter);
-    this.app.use("/api/workspace", isAuthenticated, workspaceRouter);
+    this.app.use("/api/workspaces", isAuthenticated, workspaceRouter);
   }
 
   startServer() {
-    this.app.listen(port, () => {
-      console.log(`Server running at http://${hostname}:${port}/`);
+    this.app.listen(PORT, () => {
+      console.log(`Server running at http://${HOST_NAME}:${PORT}`);
     });
   }
 }

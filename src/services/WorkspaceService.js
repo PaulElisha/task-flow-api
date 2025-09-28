@@ -1,15 +1,17 @@
 /** @format */
 
-import Member from "../models/Member";
-import User from "../models/User";
-import Project from "../models/Project";
-import Task, { Status } from "../models/Task";
-import WorkSpace from "../models/Workspace";
-import Role, { Roles } from "../models/Role";
+import Member from "../models/Member.js";
+import User from "../models/User.js";
+import Project from "../models/Project.js";
+import Task, { Status } from "../models/Task.js";
+import WorkSpace from "../models/Workspace.js";
+import Role, { Roles } from "../models/Role.js";
 import mongoose from "mongoose";
-import { createWorkspaceSchema } from "../validation/workspaceValidation";
-import Validator from "../utils/validation/validator";
-import { workspaceIdSchema } from "../utils/validation/schemas/workspaceSchema";
+import {
+  createWorkspaceSchema,
+  workspaceIdSchema,
+} from "../utils/validation/schemas/workspaceSchema.js";
+import { Validator } from "../utils/validation/validator.js";
 
 class WorkspaceService {
   createWorkspace = async ({ userid, body }) => {
@@ -109,7 +111,7 @@ class WorkspaceService {
     return { totalTasks, overdueTask, completedTasks };
   };
 
-  changeMemberRole = async (workSpaceId, memberId, roleId) => {
+  changeMemberRole = async (workSpaceId, userId, roleId) => {
     const workSpace = await WorkSpace.findById(workSpaceId);
 
     if (!workSpace) throw new Error("Workspace not found");
@@ -118,12 +120,12 @@ class WorkspaceService {
     if (!role) throw new Error("Role not found");
 
     let member;
-    member = await Member.findOne({ userId: memberId, workSpaceId });
+    member = await Member.findOne({ userId });
 
     if (!member) throw new Error("Member not found in the workspace");
 
-    member = await Member.findByIdAndUpdate(
-      { memberId },
+    member = await Member.findOneAndUpdate(
+      { userId },
       { $set: { role: role } },
       { new: true }
     );

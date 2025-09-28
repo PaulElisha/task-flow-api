@@ -1,7 +1,7 @@
 /** @format */
 
-import { MemberService } from "../services/MemberService";
-import { ProjectService } from "../services/ProjectService";
+import { MemberService } from "../services/MemberService.js";
+import { ProjectService } from "../services/ProjectService.js";
 
 class ProjectController {
   constructor() {

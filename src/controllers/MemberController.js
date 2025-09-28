@@ -1,6 +1,6 @@
 /** @format */
 
-import { MemberService } from "../services/MemberService";
+import { MemberService } from "../services/MemberService.js";
 
 class MemberController {
   constructor() {

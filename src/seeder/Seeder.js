@@ -26,26 +26,29 @@ class Seeder {
     } catch (error) {
       await this.session.abortTransaction();
       console.log("Transaction aborted", error);
+      throw error;
     } finally {
       await this.session.endSession();
     }
   };
 
   seedRoles = async () => {
-    for (const role of RolePermissions) {
+    for (const role in RolePermissions) {
       const permissions = RolePermissions[role];
 
-      let role = await Role.findOne({ type: role }).session(this.session);
-      if (!existingRole) {
-        role = await Role.create([{ type: role, permissions }], {
+      const existRole = await Role.findOne({ type: role }).session(
+        this.session
+      );
+      if (!existRole) {
+        const newRole = await Role.create([{ type: role, permissions }], {
           session: this.session,
         });
-        console.log(
-          `Role ${role} created with permissions: ${permissions.join(", ")}`
-        );
-      } else console.log(`Role ${role} already exists. Skipping...`);
+        console.log(`Role created with permissions`);
+      } else {
+        console.log(`Role already exists. Skipping...`);
+      }
     }
   };
 }
 
-await new Seeder().run();
+export { Seeder };

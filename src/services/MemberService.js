@@ -1,10 +1,10 @@
 /** @format */
 
-import Member from "../models/Member";
-import Workspace from "../models/Workspace";
-import Role, { Roles } from "../models/Role";
+import Member from "../models/Member.js";
+import Workspace from "../models/Workspace.js";
+import Role, { Roles } from "../models/Role.js";
 
-import Validator from "../utils/validation/validator";
+import { Validator } from "../utils/validation/validator.js";
 
 class MemberService {
   getMemberRoleInWorkspace = async (userId, workSpaceId) => {
