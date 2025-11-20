@@ -12,7 +12,7 @@ import { projectIdSchema } from "../utils/validation/schemas/projectSchema.js";
 import { workspaceIdSchema } from "../utils/validation/schemas/workspaceSchema.js";
 import { taskIdSchema } from "../utils/validation/schemas/taskSchema.js";
 
-import { Validator } from "../utils/validation/validator.js";
+import { Validator } from "../utils/validation/Validator.js";
 
 class TaskService {
   createTask = async (workspaceid, userid, projectid, body) => {

@@ -4,7 +4,7 @@ import Member from "../models/Member.js";
 import Workspace from "../models/Workspace.js";
 import Role, { Roles } from "../models/Role.js";
 
-import { Validator } from "../utils/validation/validator.js";
+import { Validator } from "../utils/validation/Validator.js";
 
 class MemberService {
   getMemberRoleInWorkspace = async (userId, workSpaceId) => {

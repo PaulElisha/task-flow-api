@@ -2,12 +2,8 @@
 
 import mongoose from "mongoose";
 
-class connectDb {
-  constructor() {
-    this.connectDB();
-  }
-
-  connectDB() {
+class Db {
+  connect() {
     mongoose.connect(process.env.MONGO_URI);
 
     mongoose.connection.on("connected", () => {
@@ -20,4 +16,4 @@ class connectDb {
   }
 }
 
-export { connectDb };
+export { Db };

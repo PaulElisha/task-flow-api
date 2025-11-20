@@ -1,7 +1,7 @@
 /** @format */
 
 import mongoose from "mongoose";
-import { connectDb } from "../config/connectDb.js";
+import { connectDb } from "../config/DbConfig.js";
 import Role, { Roles, Permissions, RolePermissions } from "../models/Role.js";
 
 class Seeder {

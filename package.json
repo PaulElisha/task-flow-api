@@ -8,7 +8,8 @@
   "license": "MIT",
   "scripts": {
     "seed": "node run src/seeder/Seeder.js",
-    "start": "nodemon run app.js"
+    "start": "nodemon run app.js",
+    "clean": "rm -rf node_modules/.cache"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

@@ -11,7 +11,7 @@ import {
 } from "../utils/validation/schemas/projectSchema.js";
 import { workspaceIdSchema } from "../utils/validation/schemas/workspaceSchema.js";
 
-import { Validator } from "../utils/validation/validator.js";
+import { Validator } from "../utils/validation/Validator.js";
 
 class ProjectService {
   createProject = async (workspaceid, userid, body) => {

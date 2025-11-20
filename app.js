@@ -11,22 +11,17 @@ import { workspaceRouter } from "./src/routes/WorkspaceRouter.js";
 import { memberRouter } from "./src/routes/MemberRouter.js";
 import { projectRouter } from "./src/routes/ProjectRouter.js";
 
-import { loginLocalStrategy } from "./src/config/authConfig.js";
+import { loginLocalStrategy } from "./src/config/AuthConfig.js";
 import { isAuthenticated } from "./src/middlewares/authenticate.js";
 
-import { connectDb } from "./src/config/connectDb.js";
+import { Db } from "./src/config/DbConfig.js";
+import { port, hostName, mongoUri, sessionSecret, nodeEnv } from "./src/constants/Constants.js";
 
-import { config } from "dotenv";
-config({ path: ".env" });
-
-const PORT = process.env.PORT;
-const HOST_NAME = process.env.HOST_NAME;
-const MONGODB_URI = process.env.MONGO_URI;
-console.log("Port and Hostname:", `${PORT} - ${HOST_NAME} - ${MONGODB_URI}`);
+console.log("Port and Hostname:", `${port} - ${hostName} - ${mongoUri}`);
 
 class App {
   constructor() {
-    new connectDb();
+    this.db = new Db();
     this.app = express();
     this.initializeMiddlewares();
     this.initializeRoutes();
@@ -38,12 +33,12 @@ class App {
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(
       session({
-        secret: process.env.SESSION_SECRET,
+        secret: sessionSecret,
         resave: false,
         saveUninitialized: false,
         cookie: {
           maxAge: 24 * 60 * 60 * 1000,
-          secure: process.env.NODE_ENV === "production",
+          secure: nodeEnv === "production",
           httpOnly: true,
           sameSite: "lax",
         },
@@ -68,8 +63,9 @@ class App {
   }
 
   startServer() {
-    this.app.listen(PORT, () => {
-      console.log(`Server running at http://${HOST_NAME}:${PORT}`);
+    this.db.connect();
+    this.app.listen(port, () => {
+      console.log(`Server running at http://${hostName}:${port}`);
     });
   }
 }
