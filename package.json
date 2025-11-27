@@ -7,8 +7,10 @@
   "author": "Paul Elisha <ireajao@yahoo.com>",
   "license": "MIT",
   "scripts": {
-    "seed": "node run src/seeder/Seeder.js",
-    "start": "nodemon run app.js",
+    "build": "npx tsc",
+    "start": "node dist/app.js",
+    "seed": "node run dist/src/seeder/Seeder.js",
+    "dev": "npm run build && npm run start",
     "clean": "rm -rf node_modules/.cache"
   },
   "dependencies": {
@@ -25,7 +27,17 @@
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
+    "@tsconfig/node18": "^18.2.6",
+    "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5",
+    "@types/express-session": "^1.18.2",
+    "@types/mongoose": "^5.11.96",
+    "@types/passport": "^1.0.17",
+    "@types/passport-google-oauth20": "^2.0.17",
+    "@types/passport-local": "^1.0.38",
     "dotenv": "^17.2.2",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "typescript": "^5.9.3"
   }
 }
