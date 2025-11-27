@@ -1,8 +1,10 @@
+/** @format */
+
 import express from "express";
-import { UserController } from "../controllers/user.controllers.ts";
+import { UserController } from "../controllers/user.controller.ts";
 
 import type { Router } from "express";
-import type { UserControllerInstance } from '../types/controllers/controllers.types.ts'
+import type { UserControllerInstance } from "../types/controllers/controllers.types.ts";
 
 class UserRouter {
   public router: Router;

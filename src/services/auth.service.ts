@@ -13,7 +13,6 @@ import { Roles } from "../enums/role.enum.ts";
 import type { ClientSession } from "mongoose";
 import { NotFoundExceptionError } from "../errors/not-found-exception.error.ts";
 import { HTTP_STATUS } from "../config/http.config.ts";
-import { BadRequestError } from "../errors/bad-request.error.ts";
 import { UnauthorizedExceptionError } from "../errors/unauthorized-exception.error.ts";
 
 class AuthService {

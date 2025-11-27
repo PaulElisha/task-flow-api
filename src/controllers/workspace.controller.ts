@@ -71,7 +71,6 @@ class WorkspaceController {
     async (req: Request<{ id: string }>, res: Response): Promise<Response> => {
       const userId = req.user?._id;
       const workspaceId = req.params.id;
-      s;
 
       try {
         const { role } = await this.memberService.getMemberRoleInWorkspace(

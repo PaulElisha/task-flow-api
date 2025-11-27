@@ -1,6 +1,6 @@
 /** @format */
 
-import { UserController } from "../../controllers/user.controllers.js";
+import { UserController } from "../../controllers/user.controller.ts";
 import { WorkspaceController } from "../../controllers/workspace.controller.ts";
 import { ProjectController } from "../../controllers/project.controller.ts";
 import { MemberController } from "../../controllers/member.controller.ts";

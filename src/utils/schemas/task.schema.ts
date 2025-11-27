@@ -2,7 +2,7 @@
 
 import Joi from "joi";
 import mongoose from "mongoose";
-import { Priority, Status } from "../../../models/Task.js";
+import { Priority, Status } from "../../enums/task-status.enum.ts";
 
 export const taskIdSchema = Joi.string()
   .custom((value, helpers) => {
