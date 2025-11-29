@@ -17,10 +17,7 @@ import { ValidatorInstance } from "../types/utils/validator.types.ts";
 
 import { NotFoundExceptionError } from "../errors/not-found-exception.error.ts";
 import { HTTP_STATUS } from "../config/http.config.ts";
-import { PriorityType, StatusType } from "../enums/task-status.enum.ts";
-import mongoose from "mongoose";
 import { UnauthorizedExceptionError } from "../errors/unauthorized-exception.error.ts";
-import { string } from "joi";
 
 class TaskService {
   createTask = async (

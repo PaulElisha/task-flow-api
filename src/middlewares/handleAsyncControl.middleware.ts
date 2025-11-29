@@ -17,7 +17,7 @@ export const handleAsyncControl =
   <P = any, ResBody = any, ReqBody = any, ReqQuery = any>(
     controller: HandleAsyncControl<P, ResBody, ReqBody, ReqQuery>
   ) =>
-  async (
+  async ( 
     req: Request<P, ResBody, ReqBody, ReqQuery>,
     res: Response,
     next: NextFunction
